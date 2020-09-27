@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,6 +45,17 @@ public class MovieService {
             }
         }
         return movies;
+    }
+
+    public List<String> getUserMovies(String userName){
+        List<String> stringList = new ArrayList<>();
+        List<UserMovie> list = userMovieRepository.findByUsername(userName);
+        if(!list.isEmpty()){
+            for(UserMovie temp : list){
+                stringList.add(temp.getTitle());
+            }
+        }
+        return stringList;
     }
 
     public Movie getMovieByTitle(String title)  {

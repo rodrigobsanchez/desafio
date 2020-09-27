@@ -21,27 +21,20 @@
         <thead>
         <tr>
             <th>Movie ID</th>
-            <th>TÃ­tulo</th>
+            <th>Título</th>
             <th>Diretor</th>
             <th>Quantidade</th>
             <th>Disponivel</th>
-
-            <th sec:authorize="hasRole('ROLE_USER')">Actions</th>
 
         </tr>
         </thead>
         <tbody>
         <tr th:each="movie : ${listMovies}">
             <td th:text="${movie.id}">Movie ID</td>
-            <td th:text="${movie.title}">TÃ­tulo</td>
+            <td th:text="${movie.title}">Título</td>
             <td th:text="${movie.director}">Diretor</td>
             <td th:text="${movie.amount}">Quantidade</td>
             <td th:text="${movie.available}">Disponivel</td>
-            <td sec:authorize="hasRole('ROLE_USER')">
-               <!-- <a th:href="@{'/edit/' + ${product.id}}">Edit</a>
-                &nbsp;&nbsp;&nbsp;&nbsp;
-                <a th:href="@{'/delete/' + ${product.id}}">Delete</a>-->
-            </td>
         </tr>
         </tbody>
     </table>

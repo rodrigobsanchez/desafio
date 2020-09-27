@@ -48,13 +48,15 @@ public class UserService {
         }
     }
 
+    public String deleteUser(String userName){
+        User user = userRepository.findByUsername(userName);
+        userRepository.delete(user);
+        return "O usuário: " + user.getUsername() + " foi deletado do sistema.";
+    }
 
     public User findByUserName(String userName){
         return userRepository.findByUsername(userName);
     }
-
-
-
 
     private String generatePassword(String password){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

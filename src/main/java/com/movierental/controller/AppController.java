@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -30,8 +31,13 @@ public class AppController {
 
         return "index";
     }
+
+    @RequestMapping("/logout")
+    public String logout(){
+        return "redirect:/login?logout";
+    }
     @RequestMapping("/newUser")
-    public String showNewProductForm(Model model) {
+    public String showNewUserForm(Model model) {
         User user = new User();
         model.addAttribute("user", user);
 
@@ -42,6 +48,22 @@ public class AppController {
     @ResponseBody
     public String saveUser(@ModelAttribute("user") User user) {
         return userService.insertUser(user);
+    }
+
+    @RequestMapping(value = "/insertUser" , method = { RequestMethod.GET, RequestMethod.POST })
+    @ResponseBody
+    public String insertUser(@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("password") String password){
+        return userService.insertUser(new User(name, username, password));
+    }
+
+    @RequestMapping("/deleteUser")
+    public String deleteUser(String username){
+        String currentUserLoggedIn = getLoggedInUsername();
+        if(currentUserLoggedIn.equals(username)){
+            userService.deleteUser(username);
+            return "redirect:/login?logout";
+        }
+            return "403";
     }
 
     @RequestMapping("/allMovies")
@@ -56,6 +78,17 @@ public class AppController {
         return movieService.getAllAvailableMovies();
     }
 
+    @RequestMapping("/myMovies")
+    @ResponseBody
+    public List<String> getUserMovies(String username) {
+        List<String> list = new ArrayList<>();
+        String currentUserLoggedIn = getLoggedInUsername();
+        if (currentUserLoggedIn.equals(username)) {
+            list = movieService.getUserMovies(username);
+        }
+        return list;
+    }
+
     @RequestMapping("/searchByTitle")
     @ResponseBody
     public String getMovieByTitle(String title){
@@ -67,13 +100,13 @@ public class AppController {
         }
     }
 
-    @RequestMapping("/rentMovie")
+    @RequestMapping(value = "/rentMovie" , method = { RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
     @ResponseBody
-    public String updateRentMovie(String userName, String movieName){
+    public String updateRentMovie(String username, String moviename){
         String currentUserLoggedIn = getLoggedInUsername();
-        if(currentUserLoggedIn.equals(userName)){
-            Movie movie = movieService.getMovieByTitle(movieName);
-            User user = userService.findByUserName(userName);
+        if(currentUserLoggedIn.equals(username)){
+            Movie movie = movieService.getMovieByTitle(moviename);
+            User user = userService.findByUserName(username);
 
             if(movie.getAvailable() > 0){
                 movie.setAvailable(movie.getAvailable() - 1);
@@ -88,11 +121,11 @@ public class AppController {
 
     }
 
-    @RequestMapping("/giveMovieBack")
+    @RequestMapping(value = "/giveMovieBack" , method = { RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
     @ResponseBody
-    public String updateMovieAvailable(String userName, String movieName){
-        Movie movie = movieService.getMovieByTitle(movieName);
-        User user = userService.findByUserName(userName);
+    public String updateMovieAvailable(String username, String moviename){
+        Movie movie = movieService.getMovieByTitle(moviename);
+        User user = userService.findByUserName(username);
         if(movie.getAvailable() < movie.getAmount()){
             movieService.giveMovieBack(movie, user);
             return "O filme "+ movie.getTitle() + " foi devolvido com sucesso!";

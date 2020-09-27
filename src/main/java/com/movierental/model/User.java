@@ -22,6 +22,24 @@ public class User {
     private String role;
     private boolean enable;
 
+    public User(){
+
+    }
+
+    public User(String name, String username, String password, String role, boolean enable) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.enable = enable;
+    }
+
+    public User(String name, String username, String password) {
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
+
     public Long getId() {
         return id;
     }
