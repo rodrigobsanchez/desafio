@@ -1,6 +1,7 @@
 package com.movierental.service;
 
 import com.movierental.model.User;
+import com.movierental.repository.UserMovieRepository;
 import com.movierental.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,9 +17,11 @@ public class UserService {
     DataSource dataSource;
 
     private final UserRepository userRepository;
+    private final UserMovieRepository userMovieRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMovieRepository userMovieRepository) {
         this.userRepository = userRepository;
+        this.userMovieRepository = userMovieRepository;
     }
 
     public String insertUser(User newUser){
@@ -46,7 +49,9 @@ public class UserService {
     }
 
 
-
+    public User findByUserName(String userName){
+        return userRepository.findByUsername(userName);
+    }
 
 
 

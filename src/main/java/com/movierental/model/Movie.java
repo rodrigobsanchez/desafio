@@ -73,4 +73,15 @@ public class Movie {
     public void setAvailable(int available) {
         this.available = available;
     }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", director='" + director + '\'' +
+                ", amount=" + amount +
+                ", available=" + available +
+                '}';
+    }
 }

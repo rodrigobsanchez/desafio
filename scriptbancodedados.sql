@@ -3,18 +3,21 @@ script banco de dados
 
 CREATE DATABASE movierentaldb;
 
+CREATE USER teste@localhost IDENTIFIED BY 'test';
+GRANT ALL ON movierentaldb.* TO teste@localhost;
+
 CREATE TABLE users (
 	user_id INT AUTO_INCREMENT NOT NULL,
 	name VARCHAR(100) NOT NULL,
 	username VARCHAR(45) NOT NULL,
-	password VARCHAR(65) NOT NULL,
+	password VARCHAR(100) NOT NULL,
 	role VARCHAR(45) NOT NULL,
 	enable TINYINT NULL,
 	PRIMARY KEY (user_id)
 );
 
-INSERT INTO users (name, username, password, role, enable) VALUES ('admin', 'rodrigo', '$2a$10$Hd0NQn9d0sgHG3FyggPuW.if1PV.mdIFb9wQ8C8/KOEaRiE6zkbRi', 'ROLE_USER', '1');
-INSERT INTO users (name, username, password, role, enable) VALUES ('teste', 'admin', '$2a$10$xqhaxd7vZzVXxR9WXjNQmeHcIaO.xNrjoNCIMxC5E/qhnhmWUcRPm', 'ROLE_USER', '1');
+INSERT INTO users (name, username, password, role, enable) VALUES ('admin', 'teste', '$2a$10$w5yRWIih1k6Q9m9svPNUOujnGDdy1sjzTojEg2Hc6hYR2SBbELO7a', 'ROLE_USER', '1');
+
 
 CREATE TABLE movies (
 	id INT AUTO_INCREMENT NOT NULL,
@@ -37,3 +40,13 @@ INSERT INTO movies (movie_title, movie_director, movie_amount, movie_amount_avai
 			('Terminator 2: Judgment Day','James Cameron',1 ,1),
 			('True Lies', 'James Cameron',2 ,2),
 			('Solaris', 'James Cameron',1 ,1);
+			
+			
+CREATE TABLE user_movies (
+	id INT AUTO_INCREMENT NOT NULL,
+	user_id INT NOT NULL,
+	username VARCHAR(45) NOT NULL,
+	movie_title VARCHAR(100) NOT NULL,
+	PRIMARY KEY(id)
+);			
+			
