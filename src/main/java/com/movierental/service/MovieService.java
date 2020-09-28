@@ -34,6 +34,7 @@ public class MovieService {
     }
 
 
+
     public List<Movie> getAll() {
         return (List<Movie>) moviesRepository.findAll();
     }
@@ -86,11 +87,11 @@ public class MovieService {
     }
 
     public Movie giveMovieBack(Movie movie, User user) throws BusinessException {
-        if(Objects.isNull(user)){
-            throw new BusinessException("Object User is null");
-        }
         if(Objects.isNull(movie)){
             throw new BusinessException("Object Movie is null");
+        }
+        if(Objects.isNull(user)){
+            throw new BusinessException("Object User is null");
         }
         List<UserMovie> temp = getUserMovie(user.getId(), movie.getTitle());
         deleteUserMovie(temp.get(0));

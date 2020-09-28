@@ -120,12 +120,13 @@ Atualiza as quantidades referentes ao filme na tabela movies. Deleta o registro 
 	param: moviename=<text> 
 	Retorna uma String com o sucesso, falta de disponibilidade.
 	
-	
+
+
+CAMADA DE TESTE: Foi utilizado Mockito + JUnit5 apenas na camada de Service. Classes: MovieServiceTest, UserMovieServiceTest, UserServiceTest.	
 
 Notes:
- - Tentei fazer os testes para a camada service da aplicação, não obtive sucesso em acessar (ou criar essa service na minha layer de teste) devido aos repositórios. Ainda estou aprendendo e efetuar os testes com as tecnologias utilizada.
  - Para um further developing seria necessário revisões de boas práticas, se o spring está sendo utilizado de maneira adequada.
- - A aplicação foi iniciada e utulizada com sucesso em outros sistemas operacionais.
+ - A aplicação foi iniciada e utilizada com sucesso em outros sistemas operacionais.
  Agradeço a oportunidade.
  Att
  Rodrigo Sanches.
