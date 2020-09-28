@@ -1,20 +1,27 @@
 package com.movierental.controller;
 
+import com.movierental.MyUserDetails;
+import com.movierental.exception.BusinessException;
 import com.movierental.model.Movie;
 
 import com.movierental.model.User;
 import com.movierental.service.MovieService;
 import com.movierental.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class AppController {
@@ -23,6 +30,7 @@ public class AppController {
 
     @Autowired
     private MovieService movieService;
+
 
     @RequestMapping("/")
     public String viewHomePage(Model model) {
@@ -46,24 +54,25 @@ public class AppController {
 
     @RequestMapping(value = "/saveUser", method = RequestMethod.POST)
     @ResponseBody
-    public String saveUser(@ModelAttribute("user") User user) {
+    public String saveUser(@ModelAttribute("user") User user) throws BusinessException {
         return userService.insertUser(user);
     }
 
     @RequestMapping(value = "/insertUser" , method = { RequestMethod.GET, RequestMethod.POST })
     @ResponseBody
-    public String insertUser(@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("password") String password){
+    public String insertUser(@RequestParam("name") String name, @RequestParam("username") String username, @RequestParam("password") String password) throws BusinessException {
         return userService.insertUser(new User(name, username, password));
     }
 
     @RequestMapping("/deleteUser")
-    public String deleteUser(String username){
+    public String deleteUser() throws BusinessException {
         String currentUserLoggedIn = getLoggedInUsername();
-        if(currentUserLoggedIn.equals(username)){
-            userService.deleteUser(username);
+        if(Objects.isNull(currentUserLoggedIn)){
+            return "403";
+        }else{
+            userService.deleteUser(currentUserLoggedIn);
             return "redirect:/login?logout";
         }
-            return "403";
     }
 
     @RequestMapping("/allMovies")
@@ -80,20 +89,20 @@ public class AppController {
 
     @RequestMapping("/myMovies")
     @ResponseBody
-    public List<String> getUserMovies(String username) {
+    public List<String> getUserMovies() throws BusinessException {
         List<String> list = new ArrayList<>();
         String currentUserLoggedIn = getLoggedInUsername();
-        if (currentUserLoggedIn.equals(username)) {
-            list = movieService.getUserMovies(username);
+        if (!Objects.isNull(currentUserLoggedIn)) {
+            list = movieService.getUserMovies(currentUserLoggedIn);
         }
         return list;
     }
 
     @RequestMapping("/searchByTitle")
     @ResponseBody
-    public String getMovieByTitle(String title){
+    public String getMovieByTitle(String title) throws BusinessException {
         Movie movie = movieService.getMovieByTitle(title);
-        if(movie == null){
+        if(Objects.isNull(movie)){
             return "Nenhum filme foi encontrado com esse nome: " + title;
         }else{
             return movie.toString();
@@ -102,11 +111,11 @@ public class AppController {
 
     @RequestMapping(value = "/rentMovie" , method = { RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
     @ResponseBody
-    public String updateRentMovie(String username, String moviename){
+    public String updateRentMovie(String moviename) throws BusinessException {
         String currentUserLoggedIn = getLoggedInUsername();
-        if(currentUserLoggedIn.equals(username)){
+        if(!Objects.isNull(currentUserLoggedIn)){
             Movie movie = movieService.getMovieByTitle(moviename);
-            User user = userService.findByUserName(username);
+            User user = userService.findByUserName(currentUserLoggedIn);
 
             if(movie.getAvailable() > 0){
                 movie.setAvailable(movie.getAvailable() - 1);
@@ -116,16 +125,17 @@ public class AppController {
                 return  movie.getTitle() + " não está disponível no momento.";
             }
         }else{
-            return "Apenas ações para usuário que está logado! Usuário logado: "+ currentUserLoggedIn;
+            return "Problema na sessão fazer o login novamente";
         }
 
     }
 
     @RequestMapping(value = "/giveMovieBack" , method = { RequestMethod.GET, RequestMethod.PUT, RequestMethod.POST })
     @ResponseBody
-    public String updateMovieAvailable(String username, String moviename){
+    public String updateMovieAvailable(String moviename) throws BusinessException {
+        String currentUserLoggedIn = getLoggedInUsername();
         Movie movie = movieService.getMovieByTitle(moviename);
-        User user = userService.findByUserName(username);
+        User user = userService.findByUserName(currentUserLoggedIn);
         if(movie.getAvailable() < movie.getAmount()){
             movieService.giveMovieBack(movie, user);
             return "O filme "+ movie.getTitle() + " foi devolvido com sucesso!";
@@ -135,8 +145,6 @@ public class AppController {
 
     }
 
-
-
    /* Method to get current username loggedIn*/
     public String getLoggedInUsername(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -144,7 +152,12 @@ public class AppController {
             String currentUserName = authentication.getName();
            return currentUserName;
         }
-        return "";
+        return null;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public final ResponseEntity<Exception> handleAllExceptions(RuntimeException ex) {
+        return new ResponseEntity<Exception>(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 

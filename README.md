@@ -60,10 +60,8 @@ Após o login:
 	Retorna uma String.
 
 - http://localhost:8080/deleteUser →  DELETE  → É possível apenas deletar o usuário que está logado.
-	param: username=<text> - tem que ser igual ao username logado.
-	
 	Exemplo:
-		 http://localhost:8080/deleteUser?username=teste
+		 http://localhost:8080/deleteUser
 
 - http://localhost:8080/allMovies  →  GET  → getter de todos os filmes. 
 	
@@ -75,12 +73,10 @@ Após o login:
 	Retorna uma lista de objetos em JSON.
 
 - http://localhost:8080/myMovies →  GET   →  getter dos filmes pertencentes ao usuário logado.
-	param: username=<text> - tem que ser igual ao username logado.
-
 	Retorna uma Lista de Strings com títulos em JSON.
 	
 	Exemplo:
-		http://localhost:8080/myMovies?username=teste
+		http://localhost:8080/myMovies
 
 - http://localhost:8080/searchByTitle  →  GET  → pesquisa por título.
 	param: title=<text>
@@ -89,22 +85,19 @@ Após o login:
 
 - http://localhost:8080/rentMovie  →  PUT and POST →  Aluga um filme para o usuário logado. PUT request atualiza as quantidades, na tabela movies, do filme escolhido. Enqaunto o Post insere a relação usuário-filme na tabela relacional.
 	Nesse método é feito verificação de disponibilidade junto a coluna “movie_amount_available”.
-
-	param: username=<text> - tem que ser igual ao username logado.
+	
 	param: moviename=<text> 
 
-	Retorna uma String com o sucesso, falta de disponibilidade ou usuário errado.
+	Retorna uma String com o sucesso, falta de disponibilidade.
 
 	Exemplo:
-           http://localhost:8080/rentMovie?username=teste&moviename=Avatar
+           http://localhost:8080/rentMovie?moviename=Avatar
 
 - http://localhost:8080/giveMovieBack  →  PUT and DELETE  → Devolve o filme para a locadora.
 
 Atualiza as quantidades referentes ao filme na tabela movies. Deleta o registro da tabela relacional. O método somente faz as alteraçoes se a quantidade disponível for menor que o total de filmes.
 
-	param: username=<text> - tem que ser igual ao username logado.
 	param: moviename=<text> 
-
 	
-	Retorna uma String com o sucesso, falta de disponibilidade ou usuário errado.
+	Retorna uma String com o sucesso, falta de disponibilidade.
 

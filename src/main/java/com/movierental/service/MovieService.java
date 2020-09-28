@@ -1,11 +1,13 @@
 package com.movierental.service;
 
+import com.movierental.exception.BusinessException;
 import com.movierental.model.Movie;
 import com.movierental.model.User;
 import com.movierental.model.UserMovie;
 import com.movierental.repository.MovieRepository;
 import com.movierental.repository.UserMovieRepository;
 import com.movierental.repository.UserRepository;
+import org.hibernate.query.criteria.internal.BasicPathUsageException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,7 @@ import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class MovieService {
@@ -30,7 +33,6 @@ public class MovieService {
         this.userRepository = userRepository;
     }
 
-
     public List<Movie> getAll() {
         return (List<Movie>) moviesRepository.findAll();
     }
@@ -47,8 +49,12 @@ public class MovieService {
         return movies;
     }
 
-    public List<String> getUserMovies(String userName){
+    public List<String> getUserMovies(String userName) throws BusinessException {
         List<String> stringList = new ArrayList<>();
+
+        if(Objects.isNull(userName)){
+            throw new BusinessException("Username deve ser informado");
+        }
         List<UserMovie> list = userMovieRepository.findByUsername(userName);
         if(!list.isEmpty()){
             for(UserMovie temp : list){
@@ -58,17 +64,33 @@ public class MovieService {
         return stringList;
     }
 
-    public Movie getMovieByTitle(String title)  {
+    public Movie getMovieByTitle(String title) throws BusinessException {
+        if(Objects.isNull(title)){
+            throw new BusinessException("Título deve ser informado");
+        }
         return moviesRepository.findByTitle(title);
     }
 
-    public Movie rentMovie(Movie movie, User user){
+    public Movie rentMovie(Movie movie, User user) throws BusinessException {
+        if(Objects.isNull(user)){
+            throw new BusinessException("Object User is null, parameters username from request must have some issue");
+        }
+        if(Objects.isNull(movie)){
+            throw new BusinessException("Object Movie is null");
+        }
+
         UserMovie userMovie = new UserMovie(user.getId(), user.getUsername(), movie.getTitle());
         insertUserMovie(userMovie);
         return moviesRepository.save(movie);
     }
 
-    public Movie giveMovieBack(Movie movie, User user){
+    public Movie giveMovieBack(Movie movie, User user) throws BusinessException {
+        if(Objects.isNull(user)){
+            throw new BusinessException("Object User is null");
+        }
+        if(Objects.isNull(movie)){
+            throw new BusinessException("Object Movie is null");
+        }
         List<UserMovie> temp = getUserMovie(user.getId(), movie.getTitle());
         deleteUserMovie(temp.get(0));
         movie.setAvailable(movie.getAvailable() + 1);
