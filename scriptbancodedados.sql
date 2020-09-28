@@ -3,7 +3,7 @@ script banco de dados
 
 CREATE DATABASE movierentaldb;
 
-CREATE USER teste@localhost IDENTIFIED BY 'test';
+CREATE USER 'teste'@'localhost' IDENTIFIED BY 'teste';
 GRANT ALL ON movierentaldb.* TO teste@localhost;
 
 CREATE TABLE users (
