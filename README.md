@@ -8,7 +8,7 @@ Sistema simula uma locadora de filmes. Possuindo cadastro de novos usuários que
 Tecnologias e Ferramentas utilizadas:
 -Linux - Ubuntu 18.04
 -JDK 1.8 - versão java 1.8.
--MySQL
+-MySQL 
 -Spring Boot (incluindo Spring Security) 2.2.5.RELEASE
 -Maven
 -IntellyJ Community 2020.
@@ -16,17 +16,26 @@ Tecnologias e Ferramentas utilizadas:
 
 Como executar a aplicação localmente:
 
-1 - Clone git repository: https://github.com/rodrigobsanchez/desafio.git
+1 - Clone git repository: https://github.com/rodrigobsanchez/desafio.git OU faça download do .Zip
 
-2 – Banco de Dados → Dentro desse repositório tem um arquivo (scriptbancodedados.sql), nesse .sql é criado o banco de dados movierentaldb e acesso total a esse banco ao usuário local.
+2 – Banco de Dados → Dentro desse repositório tem um arquivo (scriptbancodedados.sql), nesse .sql é criado o banco de dados movierentaldb e acesso total a esse banco ao usuário criado por esse script.
+    Segue:
+    CREATE USER 'teste'@'localhost' IDENTIFIED BY 'teste';
+    GRANT ALL ON movierentaldb.* TO teste@localhost;
+	
 	São criadas 3 tabelas: users, movies e uma tabela relacional user_movies. 
 	São inseridos por esse script 10 filmes contendo a quantidade total e quantidade disponível de cada filme. Tambem é inserido um usuário, esse será o usuário necessário para acessar a primeira vez a aplicação. 
 	
 3 – Abrir com IntellyJ → Reaplicar as dependências Maven. Procurar a classe “MovieRentalApplication” e ir em Run MovieRentalApp...main().
-	Abrir com Eclipse → Ir em File → Import → Existing Maven Project → Ir no diretório que foi clonado o repositório Procurar a classe “MovieRentalApplication” e ir em Run as Java Application.
+	Abrir com Eclipse → Ir em File → Import → Existing Maven Project → Ir no diretório que foi clonado o repositório  →  Após finalizar downloads, botão direito no pom.xml - Run As Maven clean e depois Maven Install →
+	Procurar a classe “MovieRentalApplication” e ir em Run as Java Application.
 
+4 - Trocar no arquivo application.properties:
+    spring.datasource.username=teste
+    spring.datasource.password=teste
+    *Esse seria o usuario criado no item 2. Claro que pode ser colocado como preferir.
 
-4 – Aplicação vai executar em http://localhost:8080 ou outra porta que quiseres, não há uma definição para essa na aplicação. Nesse momento será necessário fazer o login devido ao Spring Security.
+5 – Aplicação vai executar em http://localhost:8080 ou outra porta que quiseres, não há uma definição para essa na aplicação. Nesse momento será necessário fazer o login devido ao Spring Security.
 	 Apenas usuários que estão na tabela users terão acesso. O usuário inserido é 
 
 		Username : teste   
@@ -82,6 +91,18 @@ Após o login:
 	param: title=<text>
 	
 	Retorna uma String “não econtrado..” ou o método toString() do objeto movie encontrado.
+	
+	Exemplo: 
+        http://localhost:8080/searchByTitle?title=Seven
+	
+- http://localhost:8080/addMovie  →  POST  → Adiociona novo filme ou acumula com filme já existente.
+	param: title=<text>
+	param: director=<text>
+	
+	Retorna JSON do objecto Movie recem criado.
+
+    Exemplo: 
+    http://localhost:8080/addMovie?title=Seven&director=nao%20me%20lembro
 
 - http://localhost:8080/rentMovie  →  PUT and POST →  Aluga um filme para o usuário logado. PUT request atualiza as quantidades, na tabela movies, do filme escolhido. Enqaunto o Post insere a relação usuário-filme na tabela relacional.
 	Nesse método é feito verificação de disponibilidade junto a coluna “movie_amount_available”.
@@ -96,8 +117,16 @@ Após o login:
 - http://localhost:8080/giveMovieBack  →  PUT and DELETE  → Devolve o filme para a locadora.
 
 Atualiza as quantidades referentes ao filme na tabela movies. Deleta o registro da tabela relacional. O método somente faz as alteraçoes se a quantidade disponível for menor que o total de filmes.
-
 	param: moviename=<text> 
-	
 	Retorna uma String com o sucesso, falta de disponibilidade.
+	
+	
+
+Notes:
+ - Tentei fazer os testes para a camada service da aplicação, não obtive sucesso em acessar (ou criar essa service na minha layer de teste) devido aos repositórios. Ainda estou aprendendo e efetuar os testes com as tecnologias utilizada.
+ - Para um further developing seria necessário revisões de boas práticas, se o spring está sendo utilizado de maneira adequada.
+ - A aplicação foi iniciada e utulizada com sucesso em outros sistemas operacionais.
+ Agradeço a oportunidade.
+ Att
+ Rodrigo Sanches.
 

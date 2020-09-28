@@ -33,6 +33,7 @@ public class MovieService {
         this.userRepository = userRepository;
     }
 
+
     public List<Movie> getAll() {
         return (List<Movie>) moviesRepository.findAll();
     }
@@ -72,11 +73,11 @@ public class MovieService {
     }
 
     public Movie rentMovie(Movie movie, User user) throws BusinessException {
-        if(Objects.isNull(user)){
-            throw new BusinessException("Object User is null, parameters username from request must have some issue");
-        }
         if(Objects.isNull(movie)){
             throw new BusinessException("Object Movie is null");
+        }
+        if(Objects.isNull(user)){
+            throw new BusinessException("Object User is null, parameters username from request must have some issue");
         }
 
         UserMovie userMovie = new UserMovie(user.getId(), user.getUsername(), movie.getTitle());
@@ -97,6 +98,19 @@ public class MovieService {
         return moviesRepository.save(movie);
     }
 
+    public Movie insert(Movie newMovie) throws BusinessException {
+        Movie temp = getMovieByTitle(newMovie.getTitle());
+        if(!Objects.isNull(temp)){
+            temp.setAmount(temp.getAmount()+ 1);
+            temp.setAvailable(temp.getAvailable() + 1);
+            return moviesRepository.save(temp);
+        } else {
+            newMovie.setAmount(1);
+            newMovie.setAvailable(1);
+            return moviesRepository.save(newMovie);
+        }
+    }
+
     private void insertUserMovie(UserMovie userMovie){
         userMovieRepository.save(userMovie);
     }
@@ -107,4 +121,5 @@ public class MovieService {
     private List<UserMovie> getUserMovie(Long userId, String title){
         return userMovieRepository.findByUserIdAndTitle(userId, title);
     }
+
 }

@@ -145,6 +145,13 @@ public class AppController {
 
     }
 
+    @RequestMapping(value = "/addMovie" , method = { RequestMethod.GET, RequestMethod.POST })
+    @ResponseBody
+    public Movie addMovie(String title, String director) throws BusinessException {
+        Movie m = new Movie(title, director);
+        return movieService.insert(m);
+    }
+
    /* Method to get current username loggedIn*/
     public String getLoggedInUsername(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
